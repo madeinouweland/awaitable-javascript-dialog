@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+      button { padding: 20px; margin-right:20px;}
+    </style>
+    <script type="text/javascript">
+      class Dialog {
+        constructor(placeholder) {
+          this.placeholder = placeholder;
+        }
+
+        async show(text) {
+          return await new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+            let border = document.createElement("div");
+            border.setAttribute('style', "border: 2px solid #000; width:300px; height:100px;");
+            this.placeholder.appendChild(border);
+            let message = document.createElement("span");
+            message.innerHTML = text;
+            border.appendChild(message);
+            let yesButton = document.createElement("button");
+            yesButton.innerHTML = "Yes";
+            yesButton.onclick = () => this.acceptDialog();
+            border.appendChild(yesButton);
+            let noButton = document.createElement("button");
+            noButton.innerHTML = "No";
+            noButton.onclick = () => this.rejectDialog();
+            border.appendChild(noButton);
+          })
+        }
+
+        close() {
+          this.placeholder.innerHTML = "";
+        }
+
+        acceptDialog() {
+          console.log("accept");
+          this.close();
+          this.resolve("DIALOG.YES");
+        }
+
+        rejectDialog() {
+          console.log("reject");
+          this.close();
+          this.resolve("DIALOG.NO");
+        }
+      }
+
+      async function show() {
+        let dialog = new Dialog(document.getElementById('dialog'));
+        let result = await dialog.show("Would you like to make an awaitable dialog?");
+        console.log("coming back from dialog. result:", result);
+        document.getElementById("result").innerHTML = "You have answered " + result;
+      }
+
+    </script>
+  </head>
+  <body>
+    <div id="dialog"></div>
+    <button type="button" onclick="show()" name="button">Open dialog</button>
+    <div id="result"></div>
+  </body>
+</html>
